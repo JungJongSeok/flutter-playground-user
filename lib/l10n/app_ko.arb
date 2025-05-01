@@ -1,0 +1,13 @@
+{
+  "app_title": "Flutter playground",
+
+  "error_message_login_failure": "Failed to login.",
+  "error_message_retry": "Please try again later.",
+  "error_message_timeout": "Response timed out. Please try again later.",
+  "error_message_search": "Search error",
+  "error_message_unauthorized": "Not an authorized user. Please try again.",
+  "error_unknown": "An unknown error has occurred. Please try again later.",
+  "error_response_default_fail_message": "Failed to respond. Please try again.",
+  "error_response_retry_message": "Failed to respond.\nPlease try again.",
+  "error_response_exception": "Fail Exception"
+}
