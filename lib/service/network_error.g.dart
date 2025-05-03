@@ -7,7 +7,7 @@ part of 'network_error.dart';
 // **************************************************************************
 
 NetworkError _$NetworkErrorFromJson(Map<String, dynamic> json) => NetworkError(
-      json['statusCode'] as int,
+      (json['statusCode'] as num).toInt(),
       json['errorResult'] == null
           ? null
           : ErrorResponse.fromJson(json['errorResult'] as Map<String, dynamic>),
