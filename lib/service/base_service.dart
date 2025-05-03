@@ -12,7 +12,7 @@ import 'package:playground/service/network_error.dart';
 
 abstract class BaseService {
   String get commonApiUrl {
-    return "https://api.github.com/";
+    return "https://randomuser.me";
   }
 
   late final InterceptedClient _client = InterceptedClient.build(
@@ -136,21 +136,27 @@ class _LoggerInterceptor implements InterceptorContract {
   @override
   FutureOr<http.BaseRequest> interceptRequest(
       {required http.BaseRequest request}) {
-    DebugLogger.info("----- Request -----\n" +
-        'method : ${request.method}\n' +
-        'url : ${request.url}\n' +
-        'headers : ${request.headers}');
+    if (request is Request) {
+      DebugLogger.info("----- Request -----\n" +
+          'method : ${request.method}\n' +
+          'url : ${request.url}\n' +
+          'headers : ${request.headers}\n' +
+          'body : ${request.body}');
+    }
     return request;
   }
 
   @override
   FutureOr<http.BaseResponse> interceptResponse(
       {required http.BaseResponse response}) {
-    DebugLogger.info("----- Response -----\n" +
-        'method : ${response.request?.method}\n' +
-        'url : ${response.request?.url}\n' +
-        'headers : ${response.headers}\n' +
-        'statusCode : ${response.statusCode}');
+    if (response is Response) {
+      DebugLogger.info("----- Response -----\n" +
+          'method : ${response.request?.method}\n' +
+          'url : ${response.request?.url}\n' +
+          'headers : ${response.headers}\n' +
+          'statusCode : ${response.statusCode}\n' +
+          'body : ${response.body}');
+    }
     return response;
   }
 }
