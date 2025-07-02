@@ -15,11 +15,11 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final asyncItems = ref.watch(_homeViewModel.initProvider);
+    final provider = ref.watch(_homeViewModel.initProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Items')),
-      body: asyncItems.when(
+      body: provider.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, _) => Center(child: Text('Error: $err')),
         data: (items) => ListView.builder(
