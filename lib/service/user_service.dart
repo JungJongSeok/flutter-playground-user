@@ -4,9 +4,9 @@ import 'package:rxdart/rxdart.dart';
 
 import 'base_service.dart';
 
-class UserService extends BaseService {
-  Stream<UserResponse> random(UserRequest request) {
-    final String requestUrl= Uri.parse("$commonApiUrl/api").toString();
+class UserServiceImpl extends BaseService implements UserService {
+  Stream<UserResponse> getUser(UserRequest request) {
+    final String requestUrl = Uri.parse("$commonApiUrl/api").toString();
     return Rx.fromCallable(
       () => get(
         requestUrl,
@@ -14,4 +14,8 @@ class UserService extends BaseService {
       ),
     ).map((event) => UserResponse.fromJson(event)).doOnData((data) {});
   }
+}
+
+abstract class UserService {
+  Stream<UserResponse> getUser(UserRequest request);
 }

@@ -8,7 +8,7 @@ part 'user_response.g.dart';
 @JsonSerializable()
 class UserResponse implements JsonSerializer {
   final UserInfo? info;
-  final List<UserData?>? results;
+  final List<UserData>? results;
 
   UserResponse({this.info, this.results});
 
