@@ -4,8 +4,7 @@ import '../extensions/collection.dart';
 import '../utils/base_state_notifier.dart';
 import '../service/network_error.dart';
 
-
-class BaseViewmodel {
+class BaseViewModel {
   final StateNotifierProvider<NetworkErrorNotifier,
       Pair<Object, StackTrace?>> networkErrorProvider =
   StateNotifierProvider<NetworkErrorNotifier,

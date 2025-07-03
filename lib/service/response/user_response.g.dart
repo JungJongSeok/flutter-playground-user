@@ -11,8 +11,7 @@ UserResponse _$UserResponseFromJson(Map<String, dynamic> json) => UserResponse(
           ? null
           : UserInfo.fromJson(json['info'] as Map<String, dynamic>),
       results: (json['results'] as List<dynamic>?)
-          ?.map((e) =>
-              e == null ? null : UserData.fromJson(e as Map<String, dynamic>))
+          ?.map((e) => UserData.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
 
