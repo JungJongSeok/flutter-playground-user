@@ -23,17 +23,6 @@ class HomeViewModel extends BaseViewModel {
         .map((data) => data.results?.toList() ?? List.empty());
   }
 
-  Stream<List<UserData>> _more() {
-    if (_lock) {
-      return Stream.empty();
-    }
-    _lock = true;
-    return userService
-        .getUser(UserRequest(results: 10))
-        .doOnData((data) {})
-        .map((data) => data.results?.toList() ?? List.empty());
-  }
-
   late final initProvider = AutoDisposeStreamProvider<List<UserData>>((ref) {
     return _home().doOnData((data) {
       ref.read(userDataProvider.notifier).addAll(data);
