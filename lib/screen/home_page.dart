@@ -11,22 +11,37 @@ class HomePage extends ConsumerStatefulWidget {
 }
 
 class _HomePageState extends ConsumerState<HomePage> {
-  final HomeViewModel _homeViewModel = HomeViewModel(userService: UserServiceImpl());
+  final HomeViewModel _homeViewModel =
+      HomeViewModel(userService: UserServiceImpl());
 
   @override
   Widget build(BuildContext context) {
-    final provider = ref.watch(_homeViewModel.initProvider);
+    final init = ref.watch(_homeViewModel.initProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Items')),
-      body: provider.when(
+      body: init.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, _) => Center(child: Text('Error: $err')),
-        data: (items) => ListView.builder(
-          itemCount: items.length,
-          itemBuilder: (_, i) => ListTile(title: Text(items[i].email ?? "")),
-        ),
+        data: (items) {
+          final users = ref.watch(_homeViewModel.userDataProvider);
+          return ListView.builder(
+            itemCount: users.length,
+            itemBuilder: (_, index) {
+              if (index == users.length - 1) {
+                ref.watch(_homeViewModel.moreProvider);
+              }
+              return ListTile(title: Text(users[index].email ?? ""));
+            },
+          );
+        },
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _homeViewModel.dispose();
+    super.dispose();
   }
 }

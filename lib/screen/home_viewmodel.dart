@@ -23,12 +23,39 @@ class HomeViewModel extends BaseViewModel {
         .map((data) => data.results?.toList() ?? List.empty());
   }
 
+  Stream<List<UserData>> _more() {
+    if (_lock) {
+      return Stream.empty();
+    }
+    _lock = true;
+    return userService
+        .getUser(UserRequest(results: 10))
+        .doOnData((data) {})
+        .map((data) => data.results?.toList() ?? List.empty());
+  }
+
   late final initProvider = AutoDisposeStreamProvider<List<UserData>>((ref) {
     return _home().doOnData((data) {
       ref.read(userDataProvider.notifier).addAll(data);
     }).doOnError((error, stackTrace) {
       ref.read(networkErrorProvider.notifier)
         .alert(error, stackTrace: stackTrace);
+    });
+  });
+
+  bool _lock = false;
+  late final moreProvider = AutoDisposeStreamProvider<List<UserData>>((ref) {
+    if (_lock) {
+      return const Stream.empty();
+    }
+    _lock = true;
+    return _home().doOnData((data) {
+      ref.read(userDataProvider.notifier).addAll(data);
+    }).doOnError((error, stackTrace) {
+      ref.read(networkErrorProvider.notifier)
+          .alert(error, stackTrace: stackTrace);
+    }).doOnDone(() {
+      _lock = false;
     });
   });
 }
