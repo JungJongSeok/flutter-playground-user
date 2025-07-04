@@ -18,7 +18,7 @@ class HomeViewModel extends BaseViewModel {
 
   Stream<List<UserData>> _home() {
     return userService
-        .getUser(UserRequest(results: 10))
+        .getUser(UserRequest(results: 20))
         .doOnData((data) {})
         .map((data) => data.results?.toList() ?? List.empty());
   }

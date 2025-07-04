@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:playground/screen/home_viewmodel.dart';
 import 'package:playground/service/user_service.dart';
+
+import '../extensions/collection.dart';
+import '../utils/custom_widget.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -13,9 +17,26 @@ class HomePage extends ConsumerStatefulWidget {
 class _HomePageState extends ConsumerState<HomePage> {
   final HomeViewModel _homeViewModel =
       HomeViewModel(userService: UserServiceImpl());
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(() {
+      if (_scrollController.position.maxScrollExtent ==
+          _scrollController.offset) {
+        ref.watch(_homeViewModel.moreProvider);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    ref.listen<Pair<Object, StackTrace?>>(_homeViewModel.networkErrorProvider,
+        (previous, next) {
+      CustomWidget.showToast(AppLocalizations.of(context)!.error_message_retry);
+    });
+
     final init = ref.watch(_homeViewModel.initProvider);
 
     return Scaffold(
@@ -26,13 +47,14 @@ class _HomePageState extends ConsumerState<HomePage> {
         data: (items) {
           final users = ref.watch(_homeViewModel.userDataProvider);
           return ListView.builder(
+            controller: _scrollController,
             itemCount: users.length,
             itemBuilder: (_, index) {
-              if (index == users.length - 1) {
-                ref.watch(_homeViewModel.moreProvider);
-              }
               return ListTile(title: Text(users[index].email ?? ""));
             },
+            physics: const BouncingScrollPhysics(
+              parent: AlwaysScrollableScrollPhysics(),
+            ),
           );
         },
       ),
