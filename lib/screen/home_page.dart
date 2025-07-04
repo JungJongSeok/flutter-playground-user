@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:playground/screen/home_viewmodel.dart';
-import 'package:playground/service/user_service.dart';
 
 import '../extensions/collection.dart';
+import '../service/user_service.dart';
 import '../utils/custom_widget.dart';
+import 'home_viewmodel.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});

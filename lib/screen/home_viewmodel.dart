@@ -1,10 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:playground/screen/base_viewmodel.dart';
-import 'package:playground/service/user_service.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../service/request/user_request.dart';
 import '../service/response/user_response.dart';
+import '../service/user_service.dart';
+import 'base_viewmodel.dart';
 
 class HomeViewModel extends BaseViewModel {
   final UserService userService;
