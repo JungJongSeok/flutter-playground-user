@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:playground/screen/home_viewmodel.dart';
-import 'package:playground/service/user_service.dart';
+
+import '../extensions/collection.dart';
+import '../service/user_service.dart';
+import '../utils/custom_widget.dart';
+import 'home_viewmodel.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -11,22 +15,55 @@ class HomePage extends ConsumerStatefulWidget {
 }
 
 class _HomePageState extends ConsumerState<HomePage> {
-  final HomeViewModel _homeViewModel = HomeViewModel(userService: UserServiceImpl());
+  final HomeViewModel _homeViewModel =
+      HomeViewModel(userService: UserServiceImpl());
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(() {
+      if (_scrollController.position.maxScrollExtent ==
+          _scrollController.offset) {
+        ref.watch(_homeViewModel.moreProvider);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    final provider = ref.watch(_homeViewModel.initProvider);
+    ref.listen<Pair<Object, StackTrace?>>(_homeViewModel.networkErrorProvider,
+        (previous, next) {
+      CustomWidget.showToast(AppLocalizations.of(context)!.error_message_retry);
+    });
+
+    final init = ref.watch(_homeViewModel.initProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Items')),
-      body: provider.when(
+      body: init.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, _) => Center(child: Text('Error: $err')),
-        data: (items) => ListView.builder(
-          itemCount: items.length,
-          itemBuilder: (_, i) => ListTile(title: Text(items[i].email ?? "")),
-        ),
+        data: (items) {
+          final users = ref.watch(_homeViewModel.userDataProvider);
+          return ListView.builder(
+            controller: _scrollController,
+            itemCount: users.length,
+            itemBuilder: (_, index) {
+              return ListTile(title: Text(users[index].email ?? ""));
+            },
+            physics: const BouncingScrollPhysics(
+              parent: AlwaysScrollableScrollPhysics(),
+            ),
+          );
+        },
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _homeViewModel.dispose();
+    super.dispose();
   }
 }

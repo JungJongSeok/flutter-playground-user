@@ -1,10 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:playground/screen/base_viewmodel.dart';
-import 'package:playground/service/user_service.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../service/request/user_request.dart';
 import '../service/response/user_response.dart';
+import '../service/user_service.dart';
+import 'base_viewmodel.dart';
 
 class HomeViewModel extends BaseViewModel {
   final UserService userService;
@@ -18,7 +18,7 @@ class HomeViewModel extends BaseViewModel {
 
   Stream<List<UserData>> _home() {
     return userService
-        .getUser(UserRequest(results: 10))
+        .getUser(UserRequest(results: 20))
         .doOnData((data) {})
         .map((data) => data.results?.toList() ?? List.empty());
   }
@@ -29,6 +29,22 @@ class HomeViewModel extends BaseViewModel {
     }).doOnError((error, stackTrace) {
       ref.read(networkErrorProvider.notifier)
         .alert(error, stackTrace: stackTrace);
+    });
+  });
+
+  bool _lock = false;
+  late final moreProvider = AutoDisposeStreamProvider<List<UserData>>((ref) {
+    if (_lock) {
+      return const Stream.empty();
+    }
+    _lock = true;
+    return _home().doOnData((data) {
+      ref.read(userDataProvider.notifier).addAll(data);
+    }).doOnError((error, stackTrace) {
+      ref.read(networkErrorProvider.notifier)
+          .alert(error, stackTrace: stackTrace);
+    }).doOnDone(() {
+      _lock = false;
     });
   });
 }
