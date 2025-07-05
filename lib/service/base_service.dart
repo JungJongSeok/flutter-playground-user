@@ -7,8 +7,9 @@ import 'package:http_interceptor/http/intercepted_client.dart';
 import 'package:http_interceptor/http_interceptor.dart';
 import 'package:http_interceptor/models/retry_policy.dart';
 import 'package:http_parser/http_parser.dart';
-import 'package:playground/service/response/error_response.dart';
-import 'package:playground/service/network_error.dart';
+
+import 'network_error.dart';
+import 'response/error_response.dart';
 
 abstract class BaseService {
   String get commonApiUrl {
