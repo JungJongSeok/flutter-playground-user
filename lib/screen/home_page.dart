@@ -24,7 +24,8 @@ class _HomePageState extends ConsumerState<HomePage> {
     super.initState();
     _scrollController.addListener(() {
       if (_scrollController.position.maxScrollExtent ==
-          _scrollController.offset) {
+              _scrollController.offset ||
+          _scrollController.position.maxScrollExtent == 0.0) {
         ref.watch(_homeViewModel.moreProvider);
       }
     });
