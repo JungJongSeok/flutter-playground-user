@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rxdart/rxdart.dart';
 
+import '../data/user_ui_data.dart';
 import '../service/request/user_request.dart';
-import '../service/response/user_response.dart';
 import '../service/user_service.dart';
 import 'base_viewmodel.dart';
 
@@ -11,29 +11,32 @@ class HomeViewModel extends BaseViewModel {
 
   HomeViewModel({required this.userService});
 
-  final StateNotifierProvider<UserDataNotifier, List<UserData>>
+  final StateNotifierProvider<UserUiDataNotifier, List<UserUiData>>
       userDataProvider =
-      StateNotifierProvider<UserDataNotifier, List<UserData>>(
-          (ref) => UserDataNotifier());
+      StateNotifierProvider<UserUiDataNotifier, List<UserUiData>>(
+          (ref) => UserUiDataNotifier());
 
-  Stream<List<UserData>> _home() {
+  Stream<List<UserUiData>> _home() {
     return userService
         .getUser(UserRequest(results: 20))
         .doOnData((data) {})
-        .map((data) => data.results?.toList() ?? List.empty());
+        .map((data) =>
+            data.results?.map((data) => data.toUiData()).toList() ??
+            List.empty());
   }
 
-  late final initProvider = AutoDisposeStreamProvider<List<UserData>>((ref) {
+  late final initProvider = AutoDisposeStreamProvider<List<UserUiData>>((ref) {
     return _home().doOnData((data) {
       ref.read(userDataProvider.notifier).addAll(data);
     }).doOnError((error, stackTrace) {
-      ref.read(networkErrorProvider.notifier)
-        .alert(error, stackTrace: stackTrace);
+      ref
+          .read(networkErrorProvider.notifier)
+          .alert(error, stackTrace: stackTrace);
     });
   });
 
   bool _lock = false;
-  late final moreProvider = AutoDisposeStreamProvider<List<UserData>>((ref) {
+  late final moreProvider = AutoDisposeStreamProvider<List<UserUiData>>((ref) {
     if (_lock) {
       return const Stream.empty();
     }
@@ -41,7 +44,8 @@ class HomeViewModel extends BaseViewModel {
     return _home().doOnData((data) {
       ref.read(userDataProvider.notifier).addAll(data);
     }).doOnError((error, stackTrace) {
-      ref.read(networkErrorProvider.notifier)
+      ref
+          .read(networkErrorProvider.notifier)
           .alert(error, stackTrace: stackTrace);
     }).doOnDone(() {
       _lock = false;
@@ -49,17 +53,17 @@ class HomeViewModel extends BaseViewModel {
   });
 }
 
-class UserDataNotifier extends StateNotifier<List<UserData>> {
-  UserDataNotifier() : super([]);
+class UserUiDataNotifier extends StateNotifier<List<UserUiData>> {
+  UserUiDataNotifier() : super([]);
 
-  void add(UserData data) {
+  void add(UserUiData data) {
     if (!mounted) {
       return;
     }
     state = [...state, data];
   }
 
-  void addAll(List<UserData> data) {
+  void addAll(List<UserUiData> data) {
     if (!mounted) {
       return;
     }
